@@ -5,11 +5,12 @@ import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 
 /**
- * Azure Functions with IoTHub and CosmosDB
+ * DataIngestion: Azure Function with IoTHub and CosmosDB
+ * DataAnalytics: Azure Function with CosmosDB and HttpTrigger
  */
 public class Function {
 
-    @FunctionName("IoTHub-Data")
+    @FunctionName("DataIngestion")
     public void transferToOperate(
             @EventHubTrigger(name = "msg",
                     eventHubName = "myeventhubname",
@@ -22,4 +23,6 @@ public class Function {
 
         //CosmosDB
     }
+
+
 }
