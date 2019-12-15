@@ -5,6 +5,7 @@ import com.microsoft.azure.functions.*;
 import com.microsoft.azure.documentdb.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -13,6 +14,7 @@ import java.util.HashMap;
  */
 public class Function {
     private DocumentClient client;
+    private HashMap<String, DeviceDocument> deviceDocuments = new HashMap<String, DeviceDocument>();
 
     @FunctionName("DataIngestion")
     public void transferToOperate(
@@ -27,12 +29,24 @@ public class Function {
         //TODO Zeitraum 10 Sekunden => Daten sammeln
         //TODO Hinzufügen von X,Y,Z-Koords+Timestamp in Liste eines Geräts
         DeviceDocument deviceDocument = new DeviceDocument();
-        deviceDocument = createDeviceDocument(message);
+        deviceDocument.setDeviceID("d-id2047831712");
+        deviceDocument.setSessionID("s-id1274168885");
+        SmartphoneData smartphoneData1 = new SmartphoneData();
+        smartphoneData1.setDeviceCoordinateX(14.601536193152906);
+        smartphoneData1.setDeviceCoordinateY(5.84587092154832);
+        smartphoneData1.setDeviceCoordinateZ(7.0314324375097375);
+        smartphoneData1.setTimestamp("ddmmyyyy");
+        ArrayList<SmartphoneData> smartphones = new ArrayList<SmartphoneData>();
+        smartphones.add(smartphoneData1);
+        deviceDocument.setSmartphoneData(smartphones);
+        //deviceDocument = createDeviceDocument(message);
 
         //CosmosDB
 
         //Verbindung mit dem Cosmos DB Account
-        this.client = new DocumentClient("https://showcasedata.documents.azure.com:443/", "9AahygSstd60HofssExl7JG3BJkv2R3zijAF1OuqPxgxhOSkarkcS6ATT4hyN5of3hnM1wRR4NFKe7GKkYSxaA==", new ConnectionPolicy(), ConsistencyLevel.Session);
+        //this.client = new DocumentClient("https://showcasedata.documents.azure.com:443/", "9AahygSstd60HofssExl7JG3BJkv2R3zijAF1OuqPxgxhOSkarkcS6ATT4hyN5of3hnM1wRR4NFKe7GKkYSxaA==", new ConnectionPolicy(), ConsistencyLevel.Session);
+        //Verbindung mit dem Cosmos DB Emulator
+        this.client = new DocumentClient("https://localhost:8081", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==", new ConnectionPolicy(), ConsistencyLevel.Session);
         //Verbindung mit der DB herstellen, ggf. neue DB erstellen
         this.createDatabaseIfNotExists("AccelerometerDB");
         //Erstelle Container für (jede) Session (TODO sessionID)
@@ -95,6 +109,8 @@ public class Function {
             }
         }
     }
+
+
 
 
 }
