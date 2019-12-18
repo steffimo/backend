@@ -53,13 +53,17 @@ public class Function {
             System.out.println("Query data example:");
             System.out.println("=========================================");
 
+            //Create and execute a INSERT SQL statement
+            String insertSql = "INSERT INTO [SalesLT].[Product]( [Name], [ProductNumber], [Color], [ProductCategoryID], [StandardCost], [ListPrice], [SellStartDate] )"+
+                    "VALUES ('myNewProduct',123456789,'NewColor',1,100,100,GETDATE() );";
             // Create and execute a SELECT SQL statement.
             String selectSql = "SELECT TOP 20 pc.Name as CategoryName, p.name as ProductName "
                     + "FROM [SalesLT].[ProductCategory] pc "
                     + "JOIN [SalesLT].[Product] p ON pc.productcategoryid = p.productcategoryid";
 
             try (Statement statement = connection.createStatement();
-                 ResultSet resultSet = statement.executeQuery(selectSql)) {
+                 ResultSet resultSet = statement.executeQuery(insertSql)){
+                 //ResultSet resultSet = statement.executeQuery(selectSql)) {
 
                 // Print results from select statement
                 System.out.println("Top 20 categories:");
@@ -76,4 +80,7 @@ public class Function {
         }
     }
 
+    
 }
+
+
