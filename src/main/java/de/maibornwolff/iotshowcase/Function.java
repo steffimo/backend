@@ -24,9 +24,15 @@ public class Function {
         //sortieren/filtern
         //TODO Zeitraum 10 Sekunden im Frontend!
         //TODO Überprüfung der Validität der Werte z.B. von X,Y,Z-Koords
-        //TODO von message [] abschneiden
-        //JSONObject msg = new JSONObject(message);
-        //msg.getString(deviceCoordinateX)
+        message = message.substring(1,message.length()-1);
+        JSONObject msg = new JSONObject(message);
+        String sessionID = msg.getString("sessionID");
+        String deviceID = msg.getString("deviceID");
+        double deviceCoordinateX = msg.getDouble("deviceCoordinateX");
+        double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
+        double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
+        String timestamp = msg.getString("timestamp");
+
 
         //Azure SQL-Datenbank
 
