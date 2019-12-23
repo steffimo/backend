@@ -58,23 +58,18 @@ public class Function {
 
         try {
             connection = DriverManager.getConnection(url);
-            String schema = connection.getSchema();
-            System.out.println("Successful connection - Schema: " + schema);
-
+            System.out.println("Successful connection");
             System.out.println("Query data example:");
             System.out.println("=========================================");
 
             //Create and execute a INSERT SQL statement
-            String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, Timestamp)"+
-                                "VALUES ('s-id1274168886','d-id2047831711',15.601536193152906,6.84587092154832,8.0314324375097375,'ddmmyyyy')";
+            String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, Timestamp)" +
+                    "VALUES ('" + sessionID + "','" + deviceID + "'," + deviceCoordinateX + "," + deviceCoordinateY + "," + deviceCoordinateZ + ",'" + timestamp + "')";
 
-
-            try (Statement statement = connection.createStatement();
-                 ResultSet resultSet = statement.executeQuery(insertSql)) {
-
-                System.out.println("Element inserted");
-                connection.close();
-            }
+            Statement statement = connection.createStatement();
+            statement.execute(insertSql);
+            System.out.println("Element inserted");
+            connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
