@@ -75,12 +75,11 @@ public class Function {
         }
     }
 
-    /*
     @FunctionName("DataAnalytics")
     public void fetchToOperate() {
         // Connect to database
         String hostName = "showcase-iot-data-server.database.windows.net";
-        String dbName = "ShowcaseIoTData";
+        String dbName = "IoTShowcaseData";
         String user = "showcase-chef";
         String password = "IoT4urWork";
         String url = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;"
@@ -90,21 +89,21 @@ public class Function {
         try {
             connection = DriverManager.getConnection(url);
             String schema = connection.getSchema();
-            System.out.println("Successful connection - Schema: " + schema);
-
+            System.out.println("Successful connection");
             System.out.println("Query data example:");
             System.out.println("=========================================");
 
             // Create and execute a SELECT SQL statement.
-            String selectSql = "SELECT TOP 20 pc.Name as CategoryName, p.name as ProductName "
-                    + "FROM [SalesLT].[ProductCategory] pc "
-                    + "JOIN [SalesLT].[Product] p ON pc.productcategoryid = p.productcategoryid";
+            String selectSql = "SELECT SessionID, DeviceID, SQRT(SUM(DeviceCoordinateX*DeviceCoordinateX+DeviceCoordinateY*DeviceCoordinateY+DeviceCoordinateZ*DeviceCoordinateZ)) AS Energy" +
+                    "FROM [dbo].[AccelerometerData]" +
+                    "GROUP BY SessionID, DeviceID" +
+                    "ORDER BY SessionID, Energy DESC;";
 
             try (Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(selectSql)) {
 
                 // Print results from select statement
-                System.out.println("Top 20 categories:");
+                System.out.println("Top Players per session");
                 while (resultSet.next()) {
                     System.out.println(resultSet.getString(1) + " "
                             + resultSet.getString(2));
@@ -114,9 +113,8 @@ public class Function {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //TODO Maximum berechnen
         //TODO Daten an Frontend zur Auswertung weitergeben (HTTP)
-    }*/
+    }
 }
 
 
