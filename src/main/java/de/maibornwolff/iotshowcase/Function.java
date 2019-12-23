@@ -97,32 +97,31 @@ public class Function {
             System.out.println("Query data example:");
             System.out.println("=========================================");
 
-            // Create and execute a SELECT SQL statement.
-            String selectSql = "SELECT SessionID, DeviceID, SQRT(SUM(DeviceCoordinateX*DeviceCoordinateX+DeviceCoordinateY*DeviceCoordinateY+DeviceCoordinateZ*DeviceCoordinateZ)) AS Energy" +
-                    "FROM [dbo].[AccelerometerData]" +
-                    "GROUP BY SessionID, DeviceID" +
-                    "ORDER BY SessionID, Energy DESC;";
+            // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
+            String selectSql = "SELECT SessionID, DeviceID, SQRT(SUM(DeviceCoordinateX*DeviceCoordinateX+DeviceCoordinateY*DeviceCoordinateY+DeviceCoordinateZ*DeviceCoordinateZ)) AS Energy\n" +
+                    "FROM [dbo].[AccelerometerData]\n" +
+                    "GROUP BY SessionID, DeviceID\n" +
+                    "ORDER BY SessionID, Energy DESC";
+            //String selectSql = "SELECT * FROM [dbo].[AccelerometerData]";
 
             try (Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(selectSql)) {
 
                 // Print results from select statement
                 System.out.println("Top Players per session");
+                String concat = "";
                 while (resultSet.next()) {
-                    System.out.println(resultSet.getString(1) + " "
-                            + resultSet.getString(2));
+                    concat = concat + resultSet.getString(1) + " "
+                            + resultSet.getString(2) + " "
+                            + resultSet.getString(3) + "\n";
                 }
                 connection.close();
+                return request.createResponseBuilder(HttpStatus.OK).body(concat).build();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution failed").build();
         }
-        if (false) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello").build();
-        }
-        //TODO Daten an Frontend zur Auswertung weitergeben (HTTP)
     }
 }
 
