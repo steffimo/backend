@@ -5,6 +5,7 @@ import com.microsoft.azure.functions.*;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.Optional;
 
 
 /**
@@ -76,7 +77,10 @@ public class Function {
     }
 
     @FunctionName("DataAnalytics")
-    public void fetchToOperate() {
+    public HttpResponseMessage fetchToOperate(
+            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("Java HTTP trigger processed a request.");
         // Connect to database
         String hostName = "showcase-iot-data-server.database.windows.net";
         String dbName = "IoTShowcaseData";
@@ -112,6 +116,11 @@ public class Function {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (false) {
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please").build();
+        } else {
+            return request.createResponseBuilder(HttpStatus.OK).body("Hello").build();
         }
         //TODO Daten an Frontend zur Auswertung weitergeben (HTTP)
     }
