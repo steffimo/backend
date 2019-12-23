@@ -36,10 +36,20 @@ public class Function {
 
 
         //Azure SQL-Datenbank
+        /*execute CREATE TABLE statement manually
+        CREATE TABLE AccelerometerData (
+            SessionID varchar(255),
+            DeviceID varchar(255),
+            DeviceCoordinateX float(53),
+            DeviceCoordinateY float(53),
+            DeviceCoordinateZ float(53),
+            Timestamp varchar(255)
+        );
+         */
 
         // Connect to database
         String hostName = "showcase-iot-data-server.database.windows.net";
-        String dbName = "ShowcaseIoTData";
+        String dbName = "IoTShowcaseData";
         String user = "showcase-chef";
         String password = "IoT4urWork";
         String url = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;"
@@ -55,8 +65,8 @@ public class Function {
             System.out.println("=========================================");
 
             //Create and execute a INSERT SQL statement
-            String insertSql = "INSERT INTO [SalesLT].[Product]( [Name], [ProductNumber], [Color], [ProductCategoryID], [StandardCost], [ListPrice], [SellStartDate] )" +
-                    "VALUES ('myNewProduct',123456789,'NewColor',1,100,100,GETDATE() );";
+            String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, Timestamp)"+
+                                "VALUES ('s-id1274168886','d-id2047831711',15.601536193152906,6.84587092154832,8.0314324375097375,'ddmmyyyy')";
 
 
             try (Statement statement = connection.createStatement();
