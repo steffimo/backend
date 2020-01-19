@@ -1,7 +1,9 @@
 package de.maibornwolff.iotshowcase;
 
+import com.google.gson.Gson;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -9,8 +11,8 @@ import java.util.Optional;
 
 
 /**
- * DataIngestion: Azure Function with IoTHub and CosmosDB
- * DataAnalytics: Azure Function with CosmosDB and HttpTrigger
+ * DataIngestion: Azure Function with IoTHub and SQL Database
+ * DataAnalytics: Azure Function with SQL Database and HttpTrigger
  */
 public class Function {
 
@@ -22,7 +24,7 @@ public class Function {
             final ExecutionContext context) {
         context.getLogger().info(message);
         //example message [{"sessionID":"s-id1274168885","deviceID":"d-id2047831712","deviceCoordinateX":14.601536193152906,"deviceCoordinateY":5.84587092154832,"deviceCoordinateZ":7.0314324375097375,"timestamp":"ddmmyyyy"}]
-
+/*
         //sortieren/filtern
         //TODO Zeitraum 10 Sekunden im Frontend!
         //TODO Überprüfung der Validität der Werte z.B. von X,Y,Z-Koords
@@ -47,7 +49,7 @@ public class Function {
             Timestamp varchar(255)
         );
          */
-
+/*
         // Connect to database
         String hostName = "showcase-iot-data-server.database.windows.net";
         String dbName = "IoTShowcaseData";
@@ -73,7 +75,7 @@ public class Function {
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @FunctionName("DataAnalytics")
@@ -109,20 +111,40 @@ public class Function {
 
                 // Print results from select statement
                 System.out.println("Top Players per session");
-                String concat = "";
-                while (resultSet.next()) {
-                    concat = concat + resultSet.getString(1) + " "
-                            + resultSet.getString(2) + " "
-                            + resultSet.getString(3) + "\n";
+                try {
+                    JSONArray highscores = toJSON2(resultSet);
+                    connection.close();
+                    return request.createResponseBuilder(HttpStatus.OK).body(highscores).build();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Convertion to JSON failed").build();
                 }
-                connection.close();
-                return request.createResponseBuilder(HttpStatus.OK).body(concat).build();
             }
+            //TODO System.out.println("Top Players");
         } catch (Exception e) {
             e.printStackTrace();
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution failed").build();
         }
     }
+
+    public JSONArray toJSON2(ResultSet rs) throws SQLException {
+        JSONObject jsonObject = new JSONObject();
+        //Creating a json array
+        JSONArray array = new JSONArray();
+        //Inserting ResutlSet data into the json object
+        while(rs.next()) {
+            JSONObject record = new JSONObject();
+            //Inserting key-value pairs into the json object
+            record.put("Energy", rs.getInt("Energy"));
+            record.put("DeviceIDh", rs.getString("DeviceID"));
+            record.put("SessionID", rs.getString("SessionID"));
+            array.put(record);
+        }
+        jsonObject.put("Players_data", array);
+        return array;
+    }
+
+
 }
 
 
