@@ -33,7 +33,7 @@ public class Function {
         double deviceCoordinateX = msg.getDouble("deviceCoordinateX");
         double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
         double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
-        String sendingTimestamp = msg.getString("SendingTimestamp");
+        int sendingTimestamp = msg.getInt("sendingTimestamp");
 
 
         //Azure SQL-Datenbank
