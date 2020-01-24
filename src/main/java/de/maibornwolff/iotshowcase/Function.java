@@ -1,11 +1,14 @@
 package de.maibornwolff.iotshowcase;
 
+import com.google.gson.Gson;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -34,13 +37,12 @@ public class Function {
         double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
         double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
         int sendingTimestamp = msg.getInt("sendingTimestamp");
-
-
+        
         //Azure SQL-Datenbank
         /*execute CREATE TABLE statement manually
         CREATE TABLE AccelerometerData (
-            SessionID char(50),
-            DeviceID char(50),
+            SessionID varchar(50),
+            DeviceID varchar(50),
             DeviceCoordinateX smallint,
             DeviceCoordinateY smallint,
             DeviceCoordinateZ smallint,
@@ -110,9 +112,17 @@ public class Function {
                 // Print results from select statement
                 System.out.println("Top Players per session");
                 try {
-                    JSONArray highscores = toJSON(resultSet);
+                    List<PlayerScore> playerScoreList = new ArrayList<>();
+                    while (resultSet.next()) {
+                        Double energy = resultSet.getDouble("Energy");
+                        String deviceId = resultSet.getString("DeviceID");
+                        String sessionId = resultSet.getString("SessionID");
+                        playerScoreList.add(new PlayerScore(energy, deviceId, sessionId));
+                    }
                     connection.close();
-                    return request.createResponseBuilder(HttpStatus.OK).body(highscores).build();
+                    Gson gson = new Gson();
+                    String json = gson.toJson(playerScoreList);
+                    return request.createResponseBuilder(HttpStatus.OK).body(json).build();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Convertion to JSON failed").build();
@@ -125,26 +135,18 @@ public class Function {
         }
     }
 
-    public JSONArray toJSON(ResultSet rs) throws SQLException {
-        JSONObject jsonObject = new JSONObject();
-        //Creating a json array
-        JSONArray array = new JSONArray();
-        //Inserting ResultSet data into the json object
-        while(rs.next()) {
-            JSONObject record = new JSONObject();
-            //Inserting key-value pairs into the json object
-            record.put("Energy", rs.getDouble("Energy"));
-            record.put("DeviceID", rs.getString("DeviceID"));
-            record.put("SessionID", rs.getString("SessionID"));
-            array.put(record);
+    class PlayerScore {
+        private double energy;
+        private String deviceId;
+        private String sessionId;
+
+        public PlayerScore(double energy, String deviceId, String sessionId) {
+            this.energy = energy;
+            this.deviceId = deviceId;
+            this.sessionId = sessionId;
         }
-        jsonObject.put("Players_data", array);
-        return array;
     }
 
-
 }
-
-//https://inneka.com/programming/java/repository-element-was-not-specified-in-the-pom-inside-distributionmanagement-element-or-in-daltdep-loymentrepositoryidlayouturl-parameter/
 
 
