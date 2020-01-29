@@ -3,7 +3,7 @@ package de.maibornwolff.iotshowcase;
 import com.google.gson.Gson;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
-import org.json.JSONArray;
+import de.maibornwolff.iotshowcase.DataAccess.DatabaseAdapter;
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -27,8 +27,7 @@ public class Function {
         context.getLogger().info(message);
         //example message [{"sessionID":"s-id1274168885","deviceID":"d-id2047831712","deviceCoordinateX":14.601536193152906,"deviceCoordinateY":5.84587092154832,"deviceCoordinateZ":7.0314324375097375,"sendingtimestamp":"ddmmyyyy"}]
 
-        //sortieren/filtern
-        //TODO Überprüfung der Validität der Werte z.B. von X,Y,Z-Koords
+        //TODO neue Klasse Message? mit Filter/Sortieren? und *100? Und createInsertStatement(connection, message)?
         message = message.substring(1, message.length() - 1);
         JSONObject msg = new JSONObject(message);
         String sessionID = msg.getString("sessionID");
@@ -37,43 +36,21 @@ public class Function {
         double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
         double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
         int sendingTimestamp = msg.getInt("sendingTimestamp");
-        
-        //Azure SQL-Datenbank
-        /*execute CREATE TABLE statement manually
-        CREATE TABLE AccelerometerData (
-            SessionID varchar(50),
-            DeviceID varchar(50),
-            DeviceCoordinateX smallint,
-            DeviceCoordinateY smallint,
-            DeviceCoordinateZ smallint,
-            SendingTimestamp bigint
-        );
-         */
 
-        // Connect to database
-        String hostName = "showcase-iot-data-server.database.windows.net";
-        String dbName = "IoTShowcaseData";
-        String user = "showcase-chef";
-        String password = "IoT4urWork";
-        String url = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;"
-                + "hostNameInCertificate=*.database.windows.net;loginTimeout=30;", hostName, dbName, user, password);
+        //sortieren/filtern
+        /*if (deviceCoordinateX==0 && deviceCoordinateY==0 && deviceCoordinateZ==0){
+            return;
+        }*/
+        deviceCoordinateX = deviceCoordinateX * 100;
+        deviceCoordinateY = deviceCoordinateY * 100;
+        deviceCoordinateZ = deviceCoordinateZ * 100;
+
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
-
         try {
-            connection = DriverManager.getConnection(url);
-            System.out.println("Successful connection");
-            System.out.println("Query data example:");
-            System.out.println("=========================================");
-
-            //Create and execute a INSERT SQL statement
-            String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, SendingTimestamp)" +
-                    "VALUES ('" + sessionID + "','" + deviceID + "'," + deviceCoordinateX + "," + deviceCoordinateY + "," + deviceCoordinateZ + ",'" + sendingTimestamp + "')";
-
-            Statement statement = connection.createStatement();
-            statement.execute(insertSql);
-            System.out.println("Element inserted");
-            connection.close();
-        } catch (Exception e) {
+            connection = databaseAdapter.connectToDatabase();
+            databaseAdapter.createInsertStatement(connection, sessionID, deviceID, deviceCoordinateX, deviceCoordinateY, deviceCoordinateZ, sendingTimestamp);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -83,70 +60,29 @@ public class Function {
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
-        // Connect to database
-        String hostName = "showcase-iot-data-server.database.windows.net";
-        String dbName = "IoTShowcaseData";
-        String user = "showcase-chef";
-        String password = "IoT4urWork";
-        String url = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;"
-                + "hostNameInCertificate=*.database.windows.net;loginTimeout=30;", hostName, dbName, user, password);
+
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
-
         try {
-            connection = DriverManager.getConnection(url);
-            String schema = connection.getSchema();
-            System.out.println("Successful connection");
-            System.out.println("Query data example:");
-            System.out.println("=========================================");
-
-            // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
-            String selectSql = "SELECT SessionID, DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy\n" +
-                    "FROM [dbo].[AccelerometerData]\n" +
-                    "GROUP BY SessionID, DeviceID\n" +
-                    "ORDER BY SessionID, Energy DESC";
-            //String selectSql = "SELECT * FROM [dbo].[AccelerometerData]";
-
-            try (Statement statement = connection.createStatement();
-                 ResultSet resultSet = statement.executeQuery(selectSql)) {
-
-                // Print results from select statement
-                System.out.println("Top Players per session");
-                try {
-                    List<PlayerScore> playerScoreList = new ArrayList<>();
-                    while (resultSet.next()) {
-                        Double energy = resultSet.getDouble("Energy");
-                        String deviceId = resultSet.getString("DeviceID");
-                        String sessionId = resultSet.getString("SessionID");
-                        playerScoreList.add(new PlayerScore(energy, deviceId, sessionId));
-                    }
-                    connection.close();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(playerScoreList);
-                    return request.createResponseBuilder(HttpStatus.OK).body(json).build();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Convertion to JSON failed").build();
-                }
-            }
-            //TODO System.out.println("Top Players");
+            connection = databaseAdapter.connectToDatabase();
+            ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreOverall(connection);
+            ResultSetHandler resultSetHandler = new ResultSetHandler();
+            Gson gson = new Gson();
+            String json = gson.toJson(resultSetHandler.getPlayerScoreList(resultSet));
+            connection.close();
+            return request.createResponseBuilder(HttpStatus.OK).body(json).build();
         } catch (Exception e) {
             e.printStackTrace();
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution failed").build();
         }
     }
 
-    class PlayerScore {
-        private double energy;
-        private String deviceId;
-        private String sessionId;
-
-        public PlayerScore(double energy, String deviceId, String sessionId) {
-            this.energy = energy;
-            this.deviceId = deviceId;
-            this.sessionId = sessionId;
-        }
-    }
+    //TODO Top Players last Session;
 
 }
 
 
+//Notiz: ca. 20 Incomings pro Gerät? iPhone
+//ca 71 Incomings von Huawei
+//https://www.oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html
+//https://www.powerslides.com/powerpoint-industry/technology-templates/cloud-software-architecture/
