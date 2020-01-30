@@ -2,14 +2,12 @@ package de.maibornwolff.iotshowcase;
 
 public class PlayerScore {
     private Double energy;
-    private String deviceId;
-    private String sessionId;
-    //private int sendingTimestamp;
+    private String deviceID;
+    private String sessionID;
 
-    public PlayerScore(Double energy, String deviceId, String sessionId, int sendingTimestamp) {
+    public PlayerScore(Double energy, String deviceID, String sessionID) {
         this.energy = energy;
-        this.deviceId = deviceId;
-        this.sessionId = sessionId;
-        //this.sendingTimestamp = sendingTimestamp;
+        this.deviceID = deviceID;
+        this.sessionID = sessionID;
     }
 }

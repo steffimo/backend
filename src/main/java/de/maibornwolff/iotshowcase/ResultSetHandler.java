@@ -11,10 +11,9 @@ public class ResultSetHandler {
         List<PlayerScore> playerScoreList = new ArrayList<>();
         while (resultSet.next()) {
             Double energy = resultSet.getDouble("Energy");
-            String deviceId = resultSet.getString("DeviceID");
-            String sessionId = resultSet.getString("SessionID");
-            //int sendingTimestamp = resultSet.getInt("SendingTimestamp");
-            playerScoreList.add(new PlayerScore(energy, deviceId, sessionId, 1));
+            String deviceID = resultSet.getString("DeviceID");
+            String sessionID = resultSet.getString("SessionID");
+            playerScoreList.add(new PlayerScore(energy, deviceID, sessionID));
         }
         return playerScoreList;
     }
