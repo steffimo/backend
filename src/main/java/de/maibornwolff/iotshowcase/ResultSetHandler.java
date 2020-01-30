@@ -12,8 +12,12 @@ public class ResultSetHandler {
         while (resultSet.next()) {
             Double energy = resultSet.getDouble("Energy");
             String deviceID = resultSet.getString("DeviceID");
-            String sessionID = resultSet.getString("SessionID");
-            playerScoreList.add(new PlayerScore(energy, deviceID, sessionID));
+            try {
+                String sessionID = resultSet.getString("SessionID");
+                playerScoreList.add(new PlayerScore(energy, deviceID, sessionID));
+            } catch (SQLException e){
+                playerScoreList.add(new PlayerScore(energy, deviceID, ""));
+            }
         }
         return playerScoreList;
     }

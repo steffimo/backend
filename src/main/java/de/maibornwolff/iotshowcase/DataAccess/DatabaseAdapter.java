@@ -52,7 +52,6 @@ public class DatabaseAdapter {
                 "FROM [dbo].[AccelerometerData]\n" +
                 "GROUP BY SessionID, DeviceID\n" +
                 "ORDER BY SessionID, Energy DESC";
-        //String selectSql = "SELECT * FROM [dbo].[AccelerometerData]";
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(selectSql);
@@ -64,12 +63,12 @@ public class DatabaseAdapter {
         System.out.println("=========================================");
 
         // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
-        //TODO last Session
-        String selectSql = "SELECT SessionID, DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy\n" +
+        //TODO *last* Session
+        String selectSql = "SELECT DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy\n" +
                 "FROM [dbo].[AccelerometerData]\n" +
-                "GROUP BY SessionID, DeviceID\n" +
-                "ORDER BY SessionID, Energy DESC";
-        //String selectSql = "SELECT * FROM [dbo].[AccelerometerData]";
+                "WHERE SessionID ="+"'20200123'\n" +
+                "GROUP BY DeviceID\n" +
+                "ORDER BY Energy DESC";
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(selectSql);

@@ -77,7 +77,27 @@ public class Function {
         }
     }
 
-    //TODO Top Players last Session;
+    @FunctionName("DataAnalyticsSession")
+    public HttpResponseMessage fetchToOperate2(
+            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("Java HTTP trigger processed a request.");
+
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
+        Connection connection = null;
+        try {
+            connection = databaseAdapter.connectToDatabase();
+            ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreSession(connection);
+            ResultSetHandler resultSetHandler = new ResultSetHandler();
+            Gson gson = new Gson();
+            String json = gson.toJson(resultSetHandler.getPlayerScoreList(resultSet));
+            connection.close();
+            return request.createResponseBuilder(HttpStatus.OK).body(json).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution failed").build();
+        }
+    }
 
 }
 
