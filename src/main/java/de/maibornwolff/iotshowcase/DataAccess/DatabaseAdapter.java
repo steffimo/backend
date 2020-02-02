@@ -30,7 +30,7 @@ public class DatabaseAdapter {
 
     }
 
-    public void createInsertStatement(Connection connection, String sessionID, String deviceID, double deviceCoordinateX, double deviceCoordinateY, double deviceCoordinateZ, int sendingTimestamp) throws SQLException {
+    public void createInsertStatement(Connection connection, String sessionID, String deviceID, double deviceCoordinateX, double deviceCoordinateY, double deviceCoordinateZ, long sendingTimestamp) throws SQLException {
         System.out.println("Query data example:");
         System.out.println("=========================================");
         String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, SendingTimestamp)" +
@@ -58,15 +58,14 @@ public class DatabaseAdapter {
         return resultSet;
     }
 
-    public ResultSet createSelectStatementForHighscoreSession(Connection connection) throws SQLException {
+    public ResultSet createSelectStatementForHighscoreSession(Connection connection, String session) throws SQLException {
         System.out.println("Query data example:");
         System.out.println("=========================================");
 
         // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
-        //TODO *last* Session
         String selectSql = "SELECT DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy\n" +
                 "FROM [dbo].[AccelerometerData]\n" +
-                "WHERE SessionID ="+"'20200123'\n" +
+                "WHERE SessionID ="+"'"+session+"'\n" +
                 "GROUP BY DeviceID\n" +
                 "ORDER BY Energy DESC";
 

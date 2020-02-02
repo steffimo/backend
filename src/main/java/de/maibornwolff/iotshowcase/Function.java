@@ -35,8 +35,9 @@ public class Function {
         double deviceCoordinateX = msg.getDouble("deviceCoordinateX");
         double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
         double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
-        int sendingTimestamp = msg.getInt("sendingTimestamp");
+        long sendingTimestamp = msg.getLong("sendingTimestamp");
 
+        //TODO enable
         //sortieren/filtern
         /*if (deviceCoordinateX==0 && deviceCoordinateY==0 && deviceCoordinateZ==0){
             return;
@@ -82,12 +83,13 @@ public class Function {
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
-
+        
+        String session = request.getQueryParameters().get("session");
         DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreSession(connection);
+            ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreSession(connection, session);
             ResultSetHandler resultSetHandler = new ResultSetHandler();
             Gson gson = new Gson();
             String json = gson.toJson(resultSetHandler.getPlayerScoreList(resultSet));
@@ -100,6 +102,9 @@ public class Function {
     }
 
 }
+
+
+//SignalR
 
 
 //Notiz: ca. 20 Incomings pro Gerät? iPhone
