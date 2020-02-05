@@ -3,23 +3,41 @@ package de.maibornwolff.iotshowcase;
 import com.google.gson.Gson;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
+import com.microsoft.azure.functions.signalr.SignalRConnectionInfo;
+import com.microsoft.azure.functions.signalr.SignalRMessage;
+import com.microsoft.azure.functions.signalr.annotation.SignalRConnectionInfoInput;
+import com.microsoft.azure.functions.signalr.annotation.SignalROutput;
 import de.maibornwolff.iotshowcase.DataAccess.DatabaseAdapter;
 import org.json.JSONObject;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
 /**
  * DataIngestion: Azure Function with IoTHub and SQL Database
- * DataAnalytics: Azure Function with SQL Database and HttpTrigger
+ * DataAnalytics: Azure Function with SQL Database and HttpTrigger for overall Highscore
+ * DataAnalyticsSession: Azure Function with SQL Database and HttpTrigger for Session Highscore
  */
 public class Function {
 
+    @FunctionName("negotiate")
+    public SignalRConnectionInfo negotiate(
+            @HttpTrigger(
+                    name = "req",
+                    methods = { HttpMethod.POST },
+                    authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> req,
+            @SignalRConnectionInfoInput(
+                    name = "connectionInfo",
+                    hubName = "iotData") SignalRConnectionInfo connectionInfo) {
+
+        return connectionInfo;
+    }
+
+
     @FunctionName("DataIngestion")
-    public void transferToOperate(
+    @SignalROutput(name = "$return", hubName = "iotData")
+    public SignalRMessage transferToOperate(
             @EventHubTrigger(name = "msg",
                     eventHubName = "myeventhubname",
                     connection = "myconnvarname") String message,
@@ -54,6 +72,8 @@ public class Function {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return new SignalRMessage("newMessage", message);
     }
 
     @FunctionName("DataAnalytics")
@@ -83,7 +103,7 @@ public class Function {
             @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
         context.getLogger().info("Java HTTP trigger processed a request.");
-        
+
         String session = request.getQueryParameters().get("session");
         DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
@@ -105,7 +125,7 @@ public class Function {
 
 
 //SignalR
-
+//multiple triggers not allowed
 
 //Notiz: ca. 20 Incomings pro Gerät? iPhone
 //ca 71 Incomings von Huawei
