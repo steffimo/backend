@@ -83,6 +83,11 @@
             <artifactId>azure-functions-java-library</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.microsoft.azure.functions</groupId>
+            <artifactId>azure-functions-java-library-signalr</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-documentdb</artifactId>
             <version>LATEST</version>
