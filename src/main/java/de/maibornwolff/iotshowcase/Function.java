@@ -15,6 +15,7 @@ import java.util.Optional;
 
 
 /**
+ * negotiate: Azure Function mit Verbindungsinformationen für SignalR Service
  * DataIngestion: Azure Function with IoTHub and SQL Database
  * DataAnalytics: Azure Function with SQL Database and HttpTrigger for overall Highscore
  * DataAnalyticsSession: Azure Function with SQL Database and HttpTrigger for Session Highscore

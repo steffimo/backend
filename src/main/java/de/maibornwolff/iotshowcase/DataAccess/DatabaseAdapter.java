@@ -51,7 +51,7 @@ public class DatabaseAdapter {
         String selectSql = "SELECT SessionID, DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy\n" +
                 "FROM [dbo].[AccelerometerData]\n" +
                 "GROUP BY SessionID, DeviceID\n" +
-                "ORDER BY SessionID, Energy DESC";
+                "ORDER BY Energy DESC";
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(selectSql);
