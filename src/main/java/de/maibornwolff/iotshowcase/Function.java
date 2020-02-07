@@ -8,7 +8,6 @@ import com.microsoft.azure.functions.signalr.SignalRMessage;
 import com.microsoft.azure.functions.signalr.annotation.SignalRConnectionInfoInput;
 import com.microsoft.azure.functions.signalr.annotation.SignalROutput;
 import de.maibornwolff.iotshowcase.DataAccess.DatabaseAdapter;
-import org.json.JSONObject;
 
 import java.sql.*;
 import java.util.Optional;
@@ -26,12 +25,11 @@ public class Function {
     public SignalRConnectionInfo negotiate(
             @HttpTrigger(
                     name = "req",
-                    methods = { HttpMethod.POST },
+                    methods = {HttpMethod.POST},
                     authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> req,
             @SignalRConnectionInfoInput(
                     name = "connectionInfo",
                     hubName = "iotData") SignalRConnectionInfo connectionInfo) {
-
         return connectionInfo;
     }
 
@@ -46,34 +44,19 @@ public class Function {
         context.getLogger().info(message);
         //example message [{"sessionID":"s-id1274168885","deviceID":"d-id2047831712","deviceCoordinateX":14.601536193152906,"deviceCoordinateY":5.84587092154832,"deviceCoordinateZ":7.0314324375097375,"sendingtimestamp":"ddmmyyyy"}]
 
-        //TODO neue Klasse Message? mit Filter/Sortieren? und *100? Und createInsertStatement(connection, message)?
         message = message.substring(1, message.length() - 1);
-        JSONObject msg = new JSONObject(message);
-        String sessionID = msg.getString("sessionID");
-        String deviceID = msg.getString("deviceID");
-        double deviceCoordinateX = msg.getDouble("deviceCoordinateX");
-        double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
-        double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
-        long sendingTimestamp = msg.getLong("sendingTimestamp");
-
-        //TODO enable
-        //sortieren/filtern
-        /*if (deviceCoordinateX==0 && deviceCoordinateY==0 && deviceCoordinateZ==0){
-            return;
-        }*/
-        deviceCoordinateX = deviceCoordinateX * 100;
-        deviceCoordinateY = deviceCoordinateY * 100;
-        deviceCoordinateZ = deviceCoordinateZ * 100;
-
-        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
-        Connection connection = null;
-        try {
-            connection = databaseAdapter.connectToDatabase();
-            databaseAdapter.createInsertStatement(connection, sessionID, deviceID, deviceCoordinateX, deviceCoordinateY, deviceCoordinateZ, sendingTimestamp);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        Message newMessage = new Message(message);
+        //TODO enable after tests
+        //if (!newMessage.isValid()) {
+            DatabaseAdapter databaseAdapter = new DatabaseAdapter();
+            Connection connection = null;
+            try {
+                connection = databaseAdapter.connectToDatabase();
+                databaseAdapter.createInsertStatement(connection, newMessage);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        //}
         return new SignalRMessage("newMessage", message);
     }
 
@@ -124,11 +107,3 @@ public class Function {
 
 }
 
-
-//SignalR
-//multiple triggers not allowed
-
-//Notiz: ca. 20 Incomings pro Gerät? iPhone
-//ca 71 Incomings von Huawei
-//https://www.oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html
-//https://www.powerslides.com/powerpoint-industry/technology-templates/cloud-software-architecture/

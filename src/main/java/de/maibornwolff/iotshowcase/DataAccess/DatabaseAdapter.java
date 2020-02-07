@@ -1,5 +1,7 @@
 package de.maibornwolff.iotshowcase.DataAccess;
 
+import de.maibornwolff.iotshowcase.Message;
+
 import java.sql.*;
 
 public class DatabaseAdapter {
@@ -30,11 +32,11 @@ public class DatabaseAdapter {
 
     }
 
-    public void createInsertStatement(Connection connection, String sessionID, String deviceID, double deviceCoordinateX, double deviceCoordinateY, double deviceCoordinateZ, long sendingTimestamp) throws SQLException {
+    public void createInsertStatement(Connection connection, Message message) throws SQLException {
         System.out.println("Query data example:");
         System.out.println("=========================================");
         String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, SendingTimestamp)" +
-                "VALUES ('" + sessionID + "','" + deviceID + "'," + deviceCoordinateX + "," + deviceCoordinateY + "," + deviceCoordinateZ + ",'" + sendingTimestamp + "')";
+                "VALUES ('" + message.getSessionID() + "','" + message.getDeviceID() + "'," + message.getDeviceCoordinateX()*100 + "," + message.getDeviceCoordinateY()*100 + "," + message.getDeviceCoordinateZ()*100 + ",'" + message.getSendingTimestamp() + "')";
         Statement statement = null;
         statement = connection.createStatement();
         statement.execute(insertSql);
