@@ -46,6 +46,7 @@ public class Function {
 
         message = message.substring(1, message.length() - 1);
         Message newMessage = new Message(message);
+
         //TODO enable after tests
         //if (!newMessage.isValid()) {
             DatabaseAdapter databaseAdapter = new DatabaseAdapter();
@@ -107,3 +108,8 @@ public class Function {
 
 }
 
+/*
+Bei Fehler "The binding type(s) 'eventHubTrigger' are not registered. Please ensure the type is correct and the binding extension is installed. Hosting environment: Production"
+C:\Users\stefaniemo\AppData\Local\Temp\Functions
+Ordner ExtensionBundles löschen und clean package
+*/

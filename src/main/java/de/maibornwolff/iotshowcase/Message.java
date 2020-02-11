@@ -3,26 +3,26 @@ package de.maibornwolff.iotshowcase;
 import org.json.JSONObject;
 
 public class Message {
-   private String sessionID;
+    private String sessionID;
 
-    private   String deviceID;
-   private double deviceCoordinateX;
-   private double deviceCoordinateY;
-  private   double deviceCoordinateZ;
+    private String deviceID;
+    private double deviceCoordinateX;
+    private double deviceCoordinateY;
+    private double deviceCoordinateZ;
     private long sendingTimestamp;
     private boolean isValid = true;
 
-    public Message(String message){
+    public Message(String message) {
         JSONObject msg = new JSONObject(message);
-        String sessionID = msg.getString("sessionID");
-        String deviceID = msg.getString("deviceID");
-        double deviceCoordinateX = msg.getDouble("deviceCoordinateX");
-        double deviceCoordinateY = msg.getDouble("deviceCoordinateY");
-        double deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
-        if (deviceCoordinateX==0 && deviceCoordinateY==0 && deviceCoordinateZ==0){
+        this.sessionID = msg.getString("sessionID");
+        this.deviceID = msg.getString("deviceID");
+        this.deviceCoordinateX = msg.getDouble("deviceCoordinateX");
+        this.deviceCoordinateY = msg.getDouble("deviceCoordinateY");
+        this.deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
+        if (deviceCoordinateX == 0 && deviceCoordinateY == 0 && deviceCoordinateZ == 0) {
             this.isValid = false;
         }
-        long sendingTimestamp = msg.getLong("sendingTimestamp");
+        this.sendingTimestamp = msg.getLong("sendingTimestamp");
     }
 
     public String getSessionID() {
