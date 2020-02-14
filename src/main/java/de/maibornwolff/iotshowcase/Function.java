@@ -49,14 +49,14 @@ public class Function {
 
         //TODO enable after tests
         //if (!newMessage.isValid()) {
-            DatabaseAdapter databaseAdapter = new DatabaseAdapter();
-            Connection connection = null;
-            try {
-                connection = databaseAdapter.connectToDatabase();
-                databaseAdapter.createInsertStatement(connection, newMessage);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
+        Connection connection = null;
+        try {
+            connection = databaseAdapter.connectToDatabase();
+            databaseAdapter.createInsertStatement(connection, newMessage);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         //}
         return new SignalRMessage("newMessage", message);
     }

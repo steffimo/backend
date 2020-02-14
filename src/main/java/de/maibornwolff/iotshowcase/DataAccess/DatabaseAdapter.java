@@ -18,7 +18,7 @@ public class DatabaseAdapter {
          */
 
     public Connection connectToDatabase() throws SQLException {
-        String hostName = "showcase-iot-data-server.database.windows.net";
+        String hostName = "showcase-server.database.windows.net";
         String dbName = "IoTShowcaseData";
         String user = "showcase-chef";
         String password = "IoT4urWork";
@@ -29,14 +29,13 @@ public class DatabaseAdapter {
         connection = DriverManager.getConnection(url);
         System.out.println("Successful connection");
         return connection;
-
     }
 
     public void createInsertStatement(Connection connection, Message message) throws SQLException {
         System.out.println("Query data example:");
         System.out.println("=========================================");
         String insertSql = "INSERT INTO [dbo].[AccelerometerData](SessionID, DeviceID, DeviceCoordinateX, DeviceCoordinateY, DeviceCoordinateZ, SendingTimestamp)" +
-                "VALUES ('" + message.getSessionID() + "','" + message.getDeviceID() + "'," + message.getDeviceCoordinateX()*100 + "," + message.getDeviceCoordinateY()*100 + "," + message.getDeviceCoordinateZ()*100 + ",'" + message.getSendingTimestamp() + "')";
+                "VALUES ('" + message.getSessionID() + "','" + message.getDeviceID() + "'," + message.getDeviceCoordinateX() * 100 + "," + message.getDeviceCoordinateY() * 100 + "," + message.getDeviceCoordinateZ() * 100 + ",'" + message.getSendingTimestamp() + "')";
         Statement statement = null;
         statement = connection.createStatement();
         statement.execute(insertSql);
@@ -67,7 +66,7 @@ public class DatabaseAdapter {
         // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
         String selectSql = "SELECT DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy\n" +
                 "FROM [dbo].[AccelerometerData]\n" +
-                "WHERE SessionID ="+"'"+session+"'\n" +
+                "WHERE SessionID =" + "'" + session + "'\n" +
                 "GROUP BY DeviceID\n" +
                 "ORDER BY Energy DESC";
 

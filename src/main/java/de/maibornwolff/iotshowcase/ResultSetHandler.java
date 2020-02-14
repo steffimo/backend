@@ -15,7 +15,7 @@ public class ResultSetHandler {
             try {
                 String sessionID = resultSet.getString("SessionID");
                 playerScoreList.add(new PlayerScore(energy, deviceID, sessionID));
-            } catch (SQLException e){
+            } catch (SQLException e) {
                 playerScoreList.add(new PlayerScore(energy, deviceID, ""));
             }
         }
