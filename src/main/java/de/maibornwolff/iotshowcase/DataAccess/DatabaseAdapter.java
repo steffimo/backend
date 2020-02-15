@@ -15,12 +15,19 @@ public class DatabaseAdapter {
             DeviceCoordinateZ smallint,
             SendingTimestamp bigint
         );
+
+        CREATE TABLE DeviceIDPool (
+            DeviceID varchar(50),
+            used boolean
+        );
          */
 
     public Connection connectToDatabase() throws SQLException {
+        //String hostName = "showcase-server1.database.windows.net";
         String hostName = "showcase-server.database.windows.net";
         String dbName = "IoTShowcaseData";
         String user = "showcase-chef";
+        //String password = "Workshop4u";
         String password = "IoT4urWork";
         String url = String.format("jdbc:sqlserver://%s:1433;database=%s;user=%s;password=%s;encrypt=true;"
                 + "hostNameInCertificate=*.database.windows.net;loginTimeout=30;", hostName, dbName, user, password);
@@ -73,5 +80,29 @@ public class DatabaseAdapter {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(selectSql);
         return resultSet;
+    }
+
+    public ResultSet createSelectStatementForDeviceID(Connection connection) throws SQLException {
+        System.out.println("Getting deviceID:");
+        System.out.println("=========================================");
+
+        // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
+        String selectSql = "SELECT TOP (1) DeviceID\n" +
+                "FROM [dbo].[DeviceIDPool]\n" +
+                "WHERE used = false";
+
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(selectSql);
+        return resultSet;
+    }
+
+    public boolean updateDeviceIDPool(Connection connection, String deviceID, boolean usedState) throws SQLException {
+        String updateSql = "UPDATE [dbo].[DeviceIDPool] \n" +
+                "SET used = '"+usedState+"'\n" +
+                "WHere DeviceID='"+deviceID+"'";
+
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(updateSql);
+        return resultSet.isFirst();
     }
 }

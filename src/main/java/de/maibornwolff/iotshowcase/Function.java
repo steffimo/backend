@@ -14,12 +14,62 @@ import java.util.Optional;
 
 
 /**
- * negotiate: Azure Function mit Verbindungsinformationen für SignalR Service
+ * GetDeviceID: Azure Function for managing deviceID for IoTHub, getting an unused deviceID.
+ * ResetDeviceID: Azure Function for managing deviceID for IoTHub, resetting an used deviceID.
+ * negotiate: Azure Function with connection information for SignalR Service
  * DataIngestion: Azure Function with IoTHub and SQL Database
  * DataAnalytics: Azure Function with SQL Database and HttpTrigger for overall Highscore
  * DataAnalyticsSession: Azure Function with SQL Database and HttpTrigger for Session Highscore
  */
 public class Function {
+
+    @FunctionName("GetDeviceID")
+    public HttpResponseMessage getDeviceIDFromPool(
+            @HttpTrigger(name = "req",
+                    methods = {HttpMethod.GET},
+                    authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("Java HTTP trigger processed a request for deviceID.");
+
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
+        Connection connection = null;
+        try {
+            connection = databaseAdapter.connectToDatabase();
+            ResultSet resultSet = databaseAdapter.createSelectStatementForDeviceID(connection);
+            ResultSetHandler resultSetHandler = new ResultSetHandler();
+            String deviceID = resultSetHandler.getDeviceID(resultSet);
+            if(databaseAdapter.updateDeviceIDPool(connection, deviceID, true))
+                context.getLogger().info("DeviceID set on used state");
+            connection.close();
+            return request.createResponseBuilder(HttpStatus.OK).body(deviceID).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for getting deviceID failed").build();
+        }
+    }
+
+    @FunctionName("ResetDeviceID")
+    public HttpResponseMessage resetDeviceIDFromPool(
+            @HttpTrigger(name = "req",
+                    methods = {HttpMethod.POST},
+                    authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("Java HTTP trigger processed a request for resetting deviceID.");
+        String deviceID = request.getQueryParameters().get("deviceID");
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
+        Connection connection = null;
+        try {
+            connection = databaseAdapter.connectToDatabase();
+            if (databaseAdapter.updateDeviceIDPool(connection, deviceID, false))
+                context.getLogger().info("DeviceID set on unused state");
+            connection.close();
+            return request.createResponseBuilder(HttpStatus.OK).body("deviceID reset").build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for resetting failed").build();
+        }
+    }
+
 
     @FunctionName("negotiate")
     public SignalRConnectionInfo negotiate(
@@ -79,7 +129,7 @@ public class Function {
             return request.createResponseBuilder(HttpStatus.OK).body(json).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution failed").build();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for overall highscore failed").build();
         }
     }
 
@@ -102,7 +152,7 @@ public class Function {
             return request.createResponseBuilder(HttpStatus.OK).body(json).build();
         } catch (Exception e) {
             e.printStackTrace();
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution failed").build();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for session highscore failed").build();
         }
     }
 
