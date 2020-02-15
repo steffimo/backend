@@ -13,6 +13,7 @@ IntelliJ (included Maven) used as IDE, you could also take Eclipse, Visual Studi
 [Azure Command-Line Interface (CLI)](https://docs.microsoft.com/en-gb/cli/azure/?view=azure-cli-latest) for Deploying\
 npm
 
+Database - Firewalloptions: "Anderen Azure-Diensten und -Ressourcen den Zugriff auf diesen Server gestatten" - toggle Yes
 
 Local Testing:\
 Recommended to install [Azure Functions Core Tools](https://docs.microsoft.com/en-gb/azure/azure-functions/functions-run-local#v2), version 2. It provides a local development environment for writing, running, and debugging Azure Functions.\

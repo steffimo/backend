@@ -22,12 +22,4 @@ public class ResultSetHandler {
         return playerScoreList;
     }
 
-    public String getDeviceID(ResultSet resultSet) throws SQLException {
-        String deviceID = null;
-        while (resultSet.next()) {
-            deviceID = resultSet.getString("DeviceID");
-        }
-        return deviceID;
-    }
-
 }

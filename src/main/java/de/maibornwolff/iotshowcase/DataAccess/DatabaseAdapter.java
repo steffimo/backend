@@ -18,7 +18,7 @@ public class DatabaseAdapter {
 
         CREATE TABLE DeviceIDPool (
             DeviceID varchar(50),
-            used boolean
+            Used bit
         );
          */
 
@@ -48,7 +48,6 @@ public class DatabaseAdapter {
         statement.execute(insertSql);
         System.out.println("Element inserted");
         connection.close();
-
     }
 
     public ResultSet createSelectStatementForHighscoreOverall(Connection connection) throws SQLException {
@@ -82,27 +81,30 @@ public class DatabaseAdapter {
         return resultSet;
     }
 
-    public ResultSet createSelectStatementForDeviceID(Connection connection) throws SQLException {
+    public String createSelectStatementForDeviceID(Connection connection) throws SQLException {
         System.out.println("Getting deviceID:");
         System.out.println("=========================================");
 
         // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
         String selectSql = "SELECT TOP (1) DeviceID\n" +
                 "FROM [dbo].[DeviceIDPool]\n" +
-                "WHERE used = false";
+                "WHERE Used = 'False'";
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(selectSql);
-        return resultSet;
+        resultSet.next();
+        String deviceID = resultSet.getString("DeviceID");
+        return deviceID;
     }
 
-    public boolean updateDeviceIDPool(Connection connection, String deviceID, boolean usedState) throws SQLException {
+    public void updateDeviceIDPool(Connection connection, String deviceID, boolean usedState) throws SQLException {
         String updateSql = "UPDATE [dbo].[DeviceIDPool] \n" +
-                "SET used = '"+usedState+"'\n" +
-                "WHere DeviceID='"+deviceID+"'";
+                "SET Used = '" + usedState + "'\n" +
+                "WHERE DeviceID='" + deviceID + "'";
 
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(updateSql);
-        return resultSet.isFirst();
+        statement.execute(updateSql);
+        System.out.println("UsedState from " + deviceID + " updated");
+        connection.close();
     }
 }

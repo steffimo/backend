@@ -35,12 +35,8 @@ public class Function {
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            ResultSet resultSet = databaseAdapter.createSelectStatementForDeviceID(connection);
-            ResultSetHandler resultSetHandler = new ResultSetHandler();
-            String deviceID = resultSetHandler.getDeviceID(resultSet);
-            if(databaseAdapter.updateDeviceIDPool(connection, deviceID, true))
-                context.getLogger().info("DeviceID set on used state");
-            connection.close();
+            String deviceID = databaseAdapter.createSelectStatementForDeviceID(connection);
+            databaseAdapter.updateDeviceIDPool(connection, deviceID, true);
             return request.createResponseBuilder(HttpStatus.OK).body(deviceID).build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,10 +56,8 @@ public class Function {
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            if (databaseAdapter.updateDeviceIDPool(connection, deviceID, false))
-                context.getLogger().info("DeviceID set on unused state");
-            connection.close();
-            return request.createResponseBuilder(HttpStatus.OK).body("deviceID reset").build();
+            databaseAdapter.updateDeviceIDPool(connection, deviceID, false);
+            return request.createResponseBuilder(HttpStatus.OK).body("deviceID "+deviceID + " successfully reset").build();
         } catch (Exception e) {
             e.printStackTrace();
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for resetting failed").build();
