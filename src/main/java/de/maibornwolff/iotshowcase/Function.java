@@ -35,9 +35,13 @@ public class Function {
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            String deviceID = databaseAdapter.createSelectStatementForDeviceID(connection);
-            databaseAdapter.updateDeviceIDPool(connection, deviceID, true);
-            return request.createResponseBuilder(HttpStatus.OK).body(deviceID).build();
+            ResultSet resultSet = databaseAdapter.createSelectStatementForDeviceID(connection);
+            ResultSetHandler resultSetHandler = new ResultSetHandler();
+            Gson gson = new Gson();
+            Device device = resultSetHandler.getDeviceIDWithKey(resultSet);
+            String json = gson.toJson(device);
+            databaseAdapter.updateDeviceIDPool(connection, device.getDeviceID() , true);
+            return request.createResponseBuilder(HttpStatus.OK).body(json).build();
         } catch (Exception e) {
             e.printStackTrace();
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for getting deviceID failed").build();

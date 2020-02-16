@@ -22,4 +22,11 @@ public class ResultSetHandler {
         return playerScoreList;
     }
 
+    public Device getDeviceIDWithKey(ResultSet resultSet) throws SQLException {
+        resultSet.next();
+        String deviceID = resultSet.getString("DeviceID");
+        String sharedAccessKey = resultSet.getString("SharedAccessKey");
+        return new Device(deviceID, sharedAccessKey);
+    }
+
 }

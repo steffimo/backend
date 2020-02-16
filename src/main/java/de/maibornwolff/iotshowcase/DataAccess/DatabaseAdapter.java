@@ -16,10 +16,28 @@ public class DatabaseAdapter {
             SendingTimestamp bigint
         );
 
-        CREATE TABLE DeviceIDPool (
+         CREATE TABLE DeviceIDPool (
             DeviceID varchar(50),
+            SharedAccessKey varchar(50),
             Used bit
         );
+
+        INSERT INTO [dbo].[DeviceIDPool](DeviceID, SharedAccessKey, Used)
+        VALUES ('TestDeviceWeb', 'ZYwl6LA2+OlxOKWOPqjhx1qDFR+2oNZFavQuQp/t1Ao=', 'false') ,
+        ('TestDeviceWeb1', '', 'false'),
+        ('TestDeviceWeb2', '', 'false'),
+        ('TestDeviceWeb3', '', 'false'),
+        ('TestDeviceWeb4', '', 'false'),
+        ('TestDeviceWeb5', '', 'false'),
+        ('TestDeviceWeb6', '', 'false'),
+        ('TestDeviceWeb7', '', 'false'),
+        ('TestDeviceWeb8', '', 'false'),
+        ('TestDeviceWeb9', '', 'false'),
+        ('TestDeviceWeb10', '', 'false'),
+        ('TestDeviceWeb11', '', 'false'),
+        ('TestDeviceWeb12', '', 'false'),
+        ('TestDeviceWeb13', '', 'false'),
+        ('TestDeviceWeb14', '', 'false');
          */
 
     public Connection connectToDatabase() throws SQLException {
@@ -81,20 +99,18 @@ public class DatabaseAdapter {
         return resultSet;
     }
 
-    public String createSelectStatementForDeviceID(Connection connection) throws SQLException {
-        System.out.println("Getting deviceID:");
+    public ResultSet createSelectStatementForDeviceID(Connection connection) throws SQLException {
+        System.out.println("Getting deviceID with key:");
         System.out.println("=========================================");
 
         // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
-        String selectSql = "SELECT TOP (1) DeviceID\n" +
+        String selectSql = "SELECT TOP (1) DeviceID, SharedAccessKey\n" +
                 "FROM [dbo].[DeviceIDPool]\n" +
                 "WHERE Used = 'False'";
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(selectSql);
-        resultSet.next();
-        String deviceID = resultSet.getString("DeviceID");
-        return deviceID;
+        return resultSet;
     }
 
     public void updateDeviceIDPool(Connection connection, String deviceID, boolean usedState) throws SQLException {
