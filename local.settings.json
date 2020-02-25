@@ -1,12 +1,11 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=99436306f1dd4f819462;AccountKey=hX7+Bx5mNZ1UQipzDkPc3EQvekit2OkNmmRi8X1nUuVBFbl21Ot+aCDRXiKWZiODJKO0XMRt24ZS5bImfcq6zw==;EndpointSuffix=core.windows.net",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=storageaccountstefa9ebb;AccountKey=jjqSiDSh7WqkA7pp8hjpI8cMRdv3Wry2a2KcOmvZBwdJb9srmBDxLrA5XrDMKbWEz/EMX7Q2zyRTOoZ7RaTgRA==;EndpointSuffix=core.windows.net",
     "msg": "msg",
-    "myeventhubname": "iothub-ehub-showcasehu-2560225-d541a80e98",
-    "myconnvarname": "Endpoint=sb://ihsuprodamres006dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=dUK1kftGmfaRMT55TE7oZWZ8UzSZMc5+RKpiPWOLGg0=;EntityPath=iothub-ehub-showcasehu-2560225-d541a80e98",
+    "myeventhubname": "iothub-ehub-showcasehu-2920912-1a9216c145",
+    "myconnvarname": "Endpoint=sb://ihsuprodamres093dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=2PfIk+4LgGtQ+/AaHJji2GD8Vz4yngsn+Y4+7lN6XCs=;EntityPath=iothub-ehub-showcasehu-2920912-1a9216c145",
     "FUNCTIONS_WORKER_RUNTIME": "java",
-    "AzureSignalRConnectionString": "Endpoint=https://iotdata.service.signalr.net;AccessKey=od04gdZ4IcOCJUlQ3A7nu8qVPLaVAfrWE6r1mEcT6wk=;Version=1.0;"
+    "AzureSignalRConnectionString": "Endpoint=https://iotdatamw.service.signalr.net;AccessKey=x9rT8r5BvYhu9OXT25XQezMF8Uw3PjkR2bkldWihWq0=;Version=1.0;"
   }
 }
-

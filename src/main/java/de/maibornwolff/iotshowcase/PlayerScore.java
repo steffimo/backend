@@ -10,4 +10,16 @@ public class PlayerScore {
         this.deviceID = deviceID;
         this.sessionID = sessionID;
     }
+
+    public Double getEnergy() {
+        return energy;
+    }
+
+    public String getDeviceID() {
+        return deviceID;
+    }
+
+    public String getSessionID() {
+        return sessionID;
+    }
 }

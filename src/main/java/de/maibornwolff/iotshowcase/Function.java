@@ -10,6 +10,7 @@ import com.microsoft.azure.functions.signalr.annotation.SignalROutput;
 import de.maibornwolff.iotshowcase.DataAccess.DatabaseAdapter;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -20,6 +21,7 @@ import java.util.Optional;
  * DataIngestion: Azure Function with IoTHub and SQL Database
  * DataAnalytics: Azure Function with SQL Database and HttpTrigger for overall Highscore
  * DataAnalyticsSession: Azure Function with SQL Database and HttpTrigger for Session Highscore
+ * DeleteOldAccelerometerData: Azure Function with SQL Database and HttpTrigger for refreshing database table AccelerometerData
  */
 public class Function {
 
@@ -95,25 +97,24 @@ public class Function {
         message = message.substring(1, message.length() - 1);
         Message newMessage = new Message(message);
 
-        //TODO enable after tests
-        //if (!newMessage.isValid()) {
         DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            databaseAdapter.createInsertStatement(connection, newMessage);
+            databaseAdapter.createInsertStatementForAccelerometerData(connection, newMessage);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        //}
         return new SignalRMessage("newMessage", message);
     }
 
     @FunctionName("DataAnalytics")
     public HttpResponseMessage fetchToOperate(
-            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
+            @HttpTrigger(name = "req",
+                    methods = {HttpMethod.GET},
+                    authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("Java HTTP trigger processed a request for getting overall Highscore.");
 
         DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
@@ -133,19 +134,24 @@ public class Function {
 
     @FunctionName("DataAnalyticsSession")
     public HttpResponseMessage fetchToOperate2(
-            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION) HttpRequestMessage<Optional<String>> request,
+            @HttpTrigger(name = "req",
+                    methods = {HttpMethod.GET},
+                    authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
-        context.getLogger().info("Java HTTP trigger processed a request.");
+        context.getLogger().info("Java HTTP trigger processed a request for getting session highscore.");
 
         String session = request.getQueryParameters().get("session");
+        String beginningTimestamp = request.getQueryParameters().get("begin");
         DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreSession(connection, session);
+            ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreSession(connection, session, beginningTimestamp);
             ResultSetHandler resultSetHandler = new ResultSetHandler();
             Gson gson = new Gson();
-            String json = gson.toJson(resultSetHandler.getPlayerScoreList(resultSet));
+            List<PlayerScore> playerScoreList = resultSetHandler.getPlayerScoreList(resultSet);
+            databaseAdapter.createInsertHighscoresTable(connection, playerScoreList);
+            String json = gson.toJson(playerScoreList);
             connection.close();
             return request.createResponseBuilder(HttpStatus.OK).body(json).build();
         } catch (Exception e) {
@@ -154,6 +160,24 @@ public class Function {
         }
     }
 
+    @FunctionName("DeleteOldAccelerometerData")
+    public HttpResponseMessage deleteOldAccelerometerData(
+            @HttpTrigger(name = "req",
+                    methods = {HttpMethod.POST},
+                    authLevel = AuthorizationLevel.ANONYMOUS) HttpRequestMessage<Optional<String>> request,
+            final ExecutionContext context) {
+        context.getLogger().info("Java HTTP trigger processed a request for delete old AccelerometerData.");
+        DatabaseAdapter databaseAdapter = new DatabaseAdapter();
+        Connection connection = null;
+        try {
+            connection = databaseAdapter.connectToDatabase();
+            databaseAdapter.createDeleteStatementForAccelerometerData(connection);
+            return request.createResponseBuilder(HttpStatus.OK).body("AccelerometerData successfully deleted").build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Statement execution for deleting failed").build();
+        }
+    }
 }
 
 /*
