@@ -9,15 +9,6 @@ import java.util.List;
 public class DatabaseAdapter {
     //Azure SQL-Datenbank
         /*execute statements manually
-        CREATE TABLE AccelerometerData (
-            SessionID varchar(50),
-            DeviceID varchar(50),
-            DeviceCoordinateX smallint,
-            DeviceCoordinateY smallint,
-            DeviceCoordinateZ smallint,
-            SendingTimestamp bigint
-        );
-
         CREATE TABLE DeviceIDPool (
             DeviceID varchar(50) PRIMARY KEY,
             SharedAccessKey varchar(50),
@@ -25,39 +16,47 @@ public class DatabaseAdapter {
         );
 
         INSERT INTO [dbo].[DeviceIDPool](DeviceID, SharedAccessKey, Used)
-        VALUES ('TestDeviceWeb', 'oGCxm9N23jyDtq9EC9LAoqR95PrSEg5uzwpXX9o6R0E=', 'false') ,
-        ('TestDeviceWeb1', 'cVrfuANNJk7dTTlL5aOH3oD44n+XGv0sbiRy7SkC4IQ=', 'false'),
-        ('TestDeviceWeb2', '0BP7YbFP4N4yIx/FQulGE4t7bLiYTMyTdzkqcJwQqik=', 'false'),
-        ('TestDeviceWeb3', 'GyAxo606ng4aW7iQoTH5A7Rls7p4MJN3vviMqni3CeI=', 'false'),
-        ('TestDeviceWeb4', 'TjMPEFcIR21xqJyAKwPi6MnOAsCSV0JYMrSGE2xUXU8=', 'false'),
-        ('TestDeviceWeb5', 'Tl8C0sP1viGJ+QQIOfzLElqAydqlDlGndjqt4koa8TI=', 'false'),
-        ('TestDeviceWeb6', 'Q1DtjJJnc3X6v6cFz4xqObyNVsKKqA2Txl5zphaGLnU=', 'false'),
-        ('TestDeviceWeb7', 'HXevZn3m6sd5nDEBx7Y709JztMm/YjrOAuzF1PaENRg=', 'false'),
-        ('TestDeviceWeb8', '5wI0ZnAFM5VqpE5gtHrc/ElfSGLtQB2+MSpomY/vHBA=', 'false'),
-        ('TestDeviceWeb9', 'Z+rYJQzWFrGECedErffHZ9XARJzW1x5AIlCwwNokVBE=', 'false'),
-        ('TestDeviceWeb10', 'Hx4YU03DZjORLWD7VE3g2exA7utdBrUrHQeD4kvP6po=', 'false'),
-        ('TestDeviceWeb11', 'gJy6yBJ8GZ7yueXihx47/39mXlL73wFOhLPkkc3aN1g=', 'false'),
-        ('TestDeviceWeb12', 'aDCXI7TfDHWo9QE7TUINAnGEpuqBXGqGybhOea3U1Wo=', 'false'),
-        ('TestDeviceWeb13', 'vfoouVaHI/gYXw/Wm/2et6S/1iXU+KBx6hG7NdTgtzc=', 'false'),
-        ('TestDeviceWeb14', '0/tGQ92S+8fWf0GaH2xzrHxBeodKtAM7tjl+ZhuBv2A=', 'false'),
-        ('TestDeviceWeb15', 'eJvZK5Wu0Ub10Qpni4Xyn9PSpMLLhkLGXwiiQqeXv8Y=', 'false'),
-        ('TestDeviceWeb16', '+9Xz5en7KtLjC8hKAwmJHBgXxezEPgL8ZXAqhMN86PA=', 'false'),
-        ('TestDeviceWeb17', 'cXSF0lCSm7Q5FWQS+eFJT8GMvGQQNDJTYENnDjBp51k=', 'false'),
-        ('TestDeviceWeb18', 'D2qD6J5MfVXqKtyh42tB5aNwTYqauNjz/3FKUc7WQLg=', 'false'),
-        ('TestDeviceWeb19', 'R2ZA1nRAgnyGxc8Zyf8qMk7lB2UPefv3UrXestplUKE=', 'false'),
-        ('TestDeviceWeb20', 'TdOU2W6NED4+gVvuToIrAS1QpPxhINl+SMt0FTKFnDk=', 'false'),
-        ('TestDeviceWeb21', 'mRSYBrmUXqJYlkdvy2OTyLV+uSV0/oEarH73Tm1hWfo=', 'false'),
-        ('TestDeviceWeb22', 'shi6bnE+ZrZZCggntSdssSyvHF9dfqbDnC8LZYeNXWI=', 'false'),
-        ('TestDeviceWeb23', 'rmTubym39I7cnnS3L+vucUguuYsNanrYB+0IEu2EfRQ=', 'false'),
-        ('TestDeviceWeb24', 'uM+EKmXMv0xqPfS6G/2oPh1+nkO86pmoUgft1WofJx0=', 'false'),
-        ('TestDeviceWeb25', 'oAzON8HzjINhZe8DDS5i02a4hAujRmB51KVLsnh1s+I=', 'false');
+                VALUES ('TestDeviceWeb', '7dMOA5fcSKQODmGDs+VzyzjKp1DHb8hlvJGXm2hqEr8=', 'false') ,
+                ('TestDeviceWeb1', 'DzTBIWIIjZi16w2hW4D/MgusoxMPElsFJ7wiiWJnkrk=', 'false'),
+                ('TestDeviceWeb2', 'N5fDaN2VL8Rj6xJfpT36mPa2CZ2wEsQhH0Djt4Ps8xM=', 'false'),
+                ('TestDeviceWeb3', 'K8ylEcouEtmU9JtKGRoGZ6LEJtYDy/1pXU+K1SZrWug=', 'false'),
+                ('TestDeviceWeb4', 'qh5OCtSWdA9bzRxapXfosEMaCG0oO/BTWyUhZQ3r6lw=', 'false'),
+                ('TestDeviceWeb5', 'x1X6u99NwUnnqAiIYsXPgBnkx0n6JYw7qOIGIoIMp1w=', 'false'),
+                ('TestDeviceWeb6', 'rtKgNV3IUYXyXmCHoJDNqi3Y/PnZ8D4ONYcEtU/GgFI=', 'false'),
+                ('TestDeviceWeb7', 'yKGsWoUInbsYXk0t6/RioSatHXT1WqH83o6Dfrihej8=', 'false'),
+                ('TestDeviceWeb8', '5lSR/QEY3c59O83EstFA7mejO0N5rHM7Ug1lrRguX/4=', 'false'),
+                ('TestDeviceWeb9', '3NakAQfnHfBpCMqv9Jz3HSVftCVNINI6RwXzzp9ZpfE=', 'false'),
+                ('TestDeviceWeb10', 'xfGEfNKenzPfYyII2Jg2saGt8cHXzv+vkiEa3FwU4oA=', 'false'),
+                ('TestDeviceWeb11', 'qGduvRmVxFvdMOmK935NYcxeAlLeyWno3yOJB/FXVBM=', 'false'),
+                ('TestDeviceWeb12', 'fL5wlXvNgfUi33bGbDDmo4zHmhfS+Fgo9pZRgRIP6zc=', 'false'),
+                ('TestDeviceWeb13', 'R61mEdu3TjWbYO3q8G+/iHv+hNkhdNo7fDMXmFBzopw=', 'false'),
+                ('TestDeviceWeb14', '8AcH/Vh03DCOC2knUnu4DhPffDalfj3WPraFQnr31w0=', 'false'),
+                ('TestDeviceWeb15', 'cXyI49v1Hq7sUzo8V5jv5lxpvOFqLsP3083EBY7E1EI=', 'false'),
+                ('TestDeviceWeb16', 'OFwoP5SWEaWUqKtcQM9c3unMevIbs0/CBq8OaEwDH3I=', 'false'),
+                ('TestDeviceWeb17', '+so9DTVTCk6IO4I4cH0YTiGCMaO1gWIoUmy7+Vl4jTY=', 'false'),
+                ('TestDeviceWeb18', 'kRTp0U9GMAu2kgoNodk3IpNzeg7J/MhcoV21U8P1ryA=', 'false'),
+                ('TestDeviceWeb19', 'lO6IkisELwSV8oXbo1tOcqBzoB2FbkiuqVU1TDk4xQY=', 'false'),
+                ('TestDeviceWeb20', 'TCQKHqnmPqJ4p4cNCzNEfveQ3fJ6nYYp3tpkIly1Rm8=', 'false'),
+                ('TestDeviceWeb21', 'sjQw8aJA2HDhWmGSeQqjtcHlMNtpxyEioUvrtsIoN44=', 'false'),
+                ('TestDeviceWeb22', '9lFsGBAhYYaz6wuSbk8jmhRC4BYD2xvRb0wichpRdkU=', 'false'),
+                ('TestDeviceWeb23', 'xCRPtjJEFosmsTYMhXWK7qz6rVNnduqrHffCCb2aPds=', 'false'),
+                ('TestDeviceWeb24', 'REX+q8mFDg1/Hw65N/nYPdhO4w54Pycj0XIjJPQVy4M=', 'false'),
+                ('TestDeviceWeb25', 'O8K0fbAzURVlaiuGrarXT9x6fqZcGSUbjWwqz4fJJx8=', 'false');
 
+        CREATE TABLE AccelerometerData (
+                    SessionID varchar(50),
+                    DeviceID varchar(50),
+                    DeviceCoordinateX smallint,
+                    DeviceCoordinateY smallint,
+                    DeviceCoordinateZ smallint,
+                    SendingTimestamp bigint
+                );
 
         CREATE TABLE Highscores (
-            DeviceID varchar(50),
-            Energy float(24),
-            SessionID varchar(50)
-        );
+                    DeviceID varchar(50),
+                    Energy float(24),
+                    SessionID varchar(50)
+                );
          */
 
     public Connection connectToDatabase() throws SQLException {
