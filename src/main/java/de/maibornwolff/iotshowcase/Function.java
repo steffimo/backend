@@ -19,8 +19,8 @@ import java.util.Optional;
  * ResetDeviceID: Azure Function for managing deviceID for IoTHub, resetting an used deviceID.
  * negotiate: Azure Function with connection information for SignalR Service
  * DataIngestion: Azure Function with IoTHub and SQL Database
- * DataAnalytics: Azure Function with SQL Database and HttpTrigger for overall Highscore
- * DataAnalyticsSession: Azure Function with SQL Database and HttpTrigger for Session Highscore
+ * DataAnalytics: Azure Function with SQL Database and HttpTrigger for overall highscore
+ * DataAnalyticsSession: Azure Function with SQL Database and HttpTrigger for session highscore
  * DeleteOldAccelerometerData: Azure Function with SQL Database and HttpTrigger for refreshing database table AccelerometerData
  */
 public class Function {
@@ -92,7 +92,7 @@ public class Function {
                     connection = "myconnvarname") String message,
             final ExecutionContext context) {
         context.getLogger().info(message);
-        //example message [{"sessionID":"s-id1274168885","deviceID":"d-id2047831712","deviceCoordinateX":14.601536193152906,"deviceCoordinateY":5.84587092154832,"deviceCoordinateZ":7.0314324375097375,"sendingtimestamp":"ddmmyyyy"}]
+        //example message [{"sessionID":"S20200310371_47","deviceID":"Testplayer","deviceCoordinateX":-16.98,"deviceCoordinateY":31.08,"deviceCoordinateZ":-2.48,"sendingTimestamp":1583841016539}]
 
         message = message.substring(1, message.length() - 1);
         Message newMessage = new Message(message);
