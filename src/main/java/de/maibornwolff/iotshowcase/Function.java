@@ -8,8 +8,12 @@ import com.microsoft.azure.functions.signalr.SignalRMessage;
 import com.microsoft.azure.functions.signalr.annotation.SignalRConnectionInfoInput;
 import com.microsoft.azure.functions.signalr.annotation.SignalROutput;
 import de.maibornwolff.iotshowcase.DataAccess.DatabaseAdapter;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,23 +93,32 @@ public class Function {
     public SignalRMessage transferToOperate(
             @EventHubTrigger(name = "msg",
                     eventHubName = "myeventhubname",
-                    connection = "myconnvarname") String message,
+                    connection = "myconnvarname") String hubMessage,
             final ExecutionContext context) {
-        context.getLogger().info(message);
-        //example message [{"sessionID":"S20200310371_47","deviceID":"Testplayer","deviceCoordinateX":-16.98,"deviceCoordinateY":31.08,"deviceCoordinateZ":-2.48,"sendingTimestamp":1583841016539}]
+        context.getLogger().info(hubMessage);
+        //example message
+        //[
+        //{"sessionID":"S20200310371_47","deviceID":"Testplayer","deviceCoordinateX":-16.98,"deviceCoordinateY":31.08,"deviceCoordinateZ":-2.48,"sendingTimestamp":1583841016539},
+        //{"sessionID":"S20200310371_47","deviceID":"Testplayer","deviceCoordinateX":-20.98,"deviceCoordinateY":43.08,"deviceCoordinateZ":-4.48,"sendingTimestamp":1583841016739}
+        //]
 
-        message = message.substring(1, message.length() - 1);
-        Message newMessage = new Message(message);
+        Gson gson = new Gson();
+        Message[] arr = gson.fromJson(hubMessage, Message[].class);
+        List<Message> messagesList = Arrays.asList(arr);
 
         DatabaseAdapter databaseAdapter = new DatabaseAdapter();
         Connection connection = null;
         try {
             connection = databaseAdapter.connectToDatabase();
-            databaseAdapter.createInsertStatementForAccelerometerData(connection, newMessage);
+            for (Message newMessage: messagesList) {
+                databaseAdapter.createInsertStatementForAccelerometerData(connection, newMessage);
+            }
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new SignalRMessage("newMessage", message);
+        hubMessage = hubMessage.substring(1, hubMessage.length() - 1);
+        return new SignalRMessage("newMessage", hubMessage);
     }
 
     @FunctionName("DataAnalytics")

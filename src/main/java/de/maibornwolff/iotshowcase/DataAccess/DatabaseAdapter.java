@@ -82,7 +82,6 @@ public class DatabaseAdapter {
         statement = connection.createStatement();
         statement.execute(insertSql);
         System.out.println("Element inserted");
-        connection.close();
     }
 
     public ResultSet createSelectStatementForHighscoreOverall(Connection connection) throws SQLException {

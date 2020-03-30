@@ -10,14 +10,13 @@ public class Message {
     private double deviceCoordinateZ;
     private long sendingTimestamp;
 
-    public Message(String message) {
-        JSONObject msg = new JSONObject(message);
-        this.sessionID = msg.getString("sessionID");
-        this.deviceID = msg.getString("deviceID");
-        this.deviceCoordinateX = msg.getDouble("deviceCoordinateX");
-        this.deviceCoordinateY = msg.getDouble("deviceCoordinateY");
-        this.deviceCoordinateZ = msg.getDouble("deviceCoordinateZ");
-        this.sendingTimestamp = msg.getLong("sendingTimestamp");
+    public Message(String sessionID, String deviceID, double deviceCoordinateX, double deviceCoordinateY, double deviceCoordinateZ, long sendingTimestamp) {
+        this.sessionID = sessionID;
+        this.deviceID = deviceID;
+        this.deviceCoordinateX = deviceCoordinateX;
+        this.deviceCoordinateY = deviceCoordinateY;
+        this.deviceCoordinateZ = deviceCoordinateZ;
+        this.sendingTimestamp = sendingTimestamp;
     }
 
     public String getSessionID() {
