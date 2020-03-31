@@ -136,7 +136,7 @@ public class Function {
             ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreOverall(connection);
             ResultSetHandler resultSetHandler = new ResultSetHandler();
             Gson gson = new Gson();
-            String json = gson.toJson(resultSetHandler.getPlayerScoreList(resultSet));
+            String json = gson.toJson(resultSetHandler.getPlayerScoreListOverall(resultSet));
             connection.close();
             return request.createResponseBuilder(HttpStatus.OK).body(json).build();
         } catch (Exception e) {
@@ -162,7 +162,7 @@ public class Function {
             ResultSet resultSet = databaseAdapter.createSelectStatementForHighscoreSession(connection, session, beginningTimestamp);
             ResultSetHandler resultSetHandler = new ResultSetHandler();
             Gson gson = new Gson();
-            List<PlayerScore> playerScoreList = resultSetHandler.getPlayerScoreList(resultSet);
+            List<PlayerScore> playerScoreList = resultSetHandler.getPlayerScoreListSession(resultSet);
             databaseAdapter.createInsertHighscoresTable(connection, playerScoreList);
             String json = gson.toJson(playerScoreList);
             connection.close();

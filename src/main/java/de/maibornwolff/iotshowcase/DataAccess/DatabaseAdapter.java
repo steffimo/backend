@@ -102,7 +102,7 @@ public class DatabaseAdapter {
         System.out.println("=========================================");
 
         // Create and execute a SELECT SQL statement - be careful of putting an '\n' in the statement, otherwise doesn't work
-        String selectSql = "SELECT DeviceID, SQRT(SUM(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy, SessionID\n" +
+        String selectSql = "SELECT DeviceID, SUM(SQRT(DeviceCoordinateX/100*DeviceCoordinateX/100+DeviceCoordinateY/100*DeviceCoordinateY/100+DeviceCoordinateZ/100*DeviceCoordinateZ/100)) AS Energy, SessionID, COUNT(DeviceID) AS MessageNumber\n" +
                 "FROM [dbo].[AccelerometerData]\n" +
                 "WHERE SessionID =" + "'" + session + "' AND SendingTimestamp >= "+beginningTimestamp+" AND SendingTimestamp <= "+beginningTimestamp+10000+"\n" +
                 "GROUP BY SessionID, DeviceID\n" +
