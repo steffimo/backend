@@ -7,8 +7,8 @@ platforms: java
 This is the simple IoT game *ShakeIT*, used as a IoT showcase in the thesis "Developement of an IoT showcase with a didactic concept".\
 There are 3 repositories for this: 
 - [Backend](https://github.com/steffimo/backend)
-- [User Frontend](https://github.com/steffimo/iotgame)
-- [Analyse Frontend](https://github.com/steffimo/analysis)
+- [User Frontend](https://github.com/steffimo/iotgame) (recommended to use the website on your mobile phone with Chrome or Safari)
+- [Analyse Frontend](https://github.com/steffimo/analysis) (recommended to use the website on a computer with a big screen for playing)
 
 If you're interested in the content of the thesis, here's the abstract:\
 Digitalization brought the concept of the "Internet of Things" (IoT) as a central concept into circulation and everyday life in both industry and the private sector. But what is behind it?\
